@@ -99,10 +99,10 @@ The processed DataFrame is saved to `amazon_product_data.csv`.
   
 ## Usage
 
-1. **Step 1**: Run the `amazon_phones_scraping.ipynb` to scrape product links.
+1. **Step 1**: Run the `amazon_phones_scraping.ipynb` section scrap links to scrape product links.
    - This will scrape multiple pages on Amazon and save all product links to `links.csv`.
 
-2. **Step 2**: Run the `amazon_phones_scraping_products.ipynb` to scrape product details.
+2. **Step 2**: Run the `amazon_phones_scraping.ipynb` section scrap products to scrape product details.
    - This script reads `links.csv`, visits each link, scrapes the product details, and saves them to `amazon_product_data.csv`.
 
 ## Output
