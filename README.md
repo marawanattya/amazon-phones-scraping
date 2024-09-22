@@ -1,151 +1,112 @@
 # Amazon Product Scraper
 
-This project is a web scraper designed to extract product information from Amazon. The scraper uses `requests` and `BeautifulSoup` to collect various product details, including images, descriptions, pricing information, and reviews. The data is processed, cleaned, and saved to a CSV file for further analysis.
-
-## Table of Contents
-
-- [Project Overview](#project-overview)
-- [Features](#features)
-- [Prerequisites](#prerequisites)
-- [How It Works](#how-it-works)
-- [File Structure](#file-structure)
-- [Data Processing](#data-processing)
-- [Usage](#usage)
-- [Output](#output)
-- [Contributing](#contributing)
-- [License](#license)
-
 ## Project Overview
 
-This project scrapes product data from Amazon pages, including attributes such as price, ratings, descriptions, and customer reviews. After scraping, the data is cleaned and saved to a CSV file for further analysis.
+This project is an **asynchronous web scraper** designed to extract product information from Amazon product listings. It uses `aiohttp` for making concurrent HTTP requests and `BeautifulSoup` for parsing HTML to extract data. The scraper also includes additional logic for data extraction, error handling, and retries.
+
+The project has two parts:
+1. **Async Scraper (using `aiohttp`)**: Fetches URLs and collects product listing links asynchronously.
+2. **Synchronous Scraper (using `requests`)**: Extracts product details like title, price, ratings, and reviews from the collected URLs.
 
 ## Features
 
-- Extracts product details such as:
-  - Name, brand, color, dimensions
-  - Price, typical price, discounts
-  - Number of ratings, reviews, and status
-  - Buyer data (e.g., number of buyers last month)
-- Extracts customer reviews (USA and international)
-- Handles retries and failures in case of request timeouts
-- Saves data to CSV for easy access and analysis
+- Uses asynchronous programming to scrape URLs concurrently, significantly speeding up the scraping process.
+- Extracts detailed product information such as:
+  - Product title
+  - Price
+  - Ratings and number of reviews
+  - Product specifications like color, OS, CPU, etc.
+  - Reviews (if available)
+- Includes random user-agent headers and timeouts to avoid getting blocked.
+- Resilient to errors with retry mechanisms.
 
-## Prerequisites
-
-Before running the project, ensure you have Python 3.x installed on your machine along with the required libraries.
-
-### Required Libraries
-
-- `requests`
-- `beautifulsoup4`
-- `pandas`
-- `concurrent.futures`
-
-
-## How It Works
-
-### Scraping Logic
-
-- The scraper uses multiple user agents to avoid detection and blocks from the website.
-- It makes HTTP requests using a retry mechanism to handle timeouts or server errors.
-- Extracted product details include:
-  - **Basic Info**: name, brand, color, model, etc.
-  - **Pricing Info**: price, typical price, discounts, savings
-  - **Ratings & Reviews**: number of ratings, reviews (USA and international)
-  - **Specifications**: battery capacity, storage, screen size, CPU, etc.
-  
-### Data Cleaning and Processing
-
-Once data is collected from the HTML page, it is cleaned and processed. This includes:
-- Converting string prices and numbers (with symbols like `$`, `,`, and `K`) to numeric values.
-- Calculating the `you_save` column by subtracting the product's current price from the typical price.
-
-The processed data is saved as a CSV file (`amazon_product_data.csv`), which can be easily loaded into a DataFrame for further analysis.
-
-## File Structure
+## Project Structure
 
 ```
-amazon-product-scraper/
-│
-├── amazon_phones_scraping.ipynb          # Main script to scrape and process data
-├── links.csv           # Input file containing URLs of Amazon products to scrape
-└── amazon_product_data.csv  # Output CSV file containing scraped and cleaned data
+├── async_scraper.py   # Asynchronous web scraping script
+├── sync_scraper.py    # Synchronous web scraping and data extraction
+├── README.md          # This file
+├── links.csv          # File containing the scraped product URLs
+└── requirements.txt   # Dependencies for the project
 ```
 
-- **`amazon_phones_scraping.ipynb`**: The main script responsible for scraping, processing, and saving the data.
-- **`links.csv`**: A CSV file with a list of Amazon product URLs to scrape.
-- **`amazon_product_data.csv`**: Output file that stores the scraped product data.
+## Setup and Installation
 
-## Data Processing
+1. **Clone the repository:**
 
-The following columns are processed and cleaned in the output CSV:
+   ```bash
+   git clone https://github.com/yourusername/amazon-product-scraper.git
+   cd amazon-product-scraper
+   ```
 
-- **typical_price**: Typical price of the product, stripped of `$` and `,`, converted to float.
-- **number_of_buyers_last_month_more_than**: Number of buyers last month, replacing 'K' with '000' and removing `+`.
-- **number_of_ratings**: Number of product ratings, stripped of commas.
-- **price**: Current price, stripped of `$` and `,`, converted to float.
-- **you_save**: Calculated field showing the amount saved (`typical_price - price`).
+2. **Install dependencies:**
 
-The processed DataFrame is saved to `amazon_product_data.csv`.
+   Make sure you have Python 3.8+ installed. Then install the required libraries:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Create a CSV file with product URLs:**
+
+   The `async_scraper.py` script will generate `links.csv` file that contains product URLs. You can customize the URL patterns in the script to fit your requirements.
 
 ## Usage
 
-To run the scraper:
+### 1. Asynchronous URL Scraping
 
-1. Ensure that the `links.csv` file is properly set up with a column `URL` containing the product links.
-2. Run the script with:
+The `async_scraper.py` script gathers Amazon product URLs and saves them in `links.csv`.
 
-   ```bash
-   python scraper.py
-   ```
+**Running the asynchronous scraper:**
 
-3. After scraping is complete, the output will be saved as `amazon_product_data.csv`.
-
-### Example CSV (`links.csv`)
-
-```csv
-URL
-https://www.amazon.com/dp/example-product-id-1
-https://www.amazon.com/dp/example-product-id-2
+```bash
+python async_scraper.py
 ```
 
-### Example Usage in Jupyter/Colab
+This script:
+- Scrapes Amazon product listings and collects product URLs asynchronously.
+- Stores the collected URLs in a CSV file (`links.csv`).
 
-```python
-import pandas as pd
+### 2. Synchronous Product Data Scraping
 
-# Load the scraped data
-df = pd.read_csv('/content/amazon_product_data.csv')
+Once URLs are collected, the `sync_scraper.py` script extracts detailed product information.
 
-# Display the first few rows
-df.head()
+**Running the synchronous scraper:**
+
+```bash
+python sync_scraper.py
 ```
 
-## Output
+This script:
+- Reads URLs from `links.csv`.
+- Scrapes individual product pages.
+- Extracts relevant data like product details, ratings, and reviews.
+- Saves the data to a structured format (e.g., JSON, CSV, etc.).
 
-The script generates a CSV file (`amazon_product_data.csv`) containing all the extracted and cleaned product details.
+## Key Functions
 
-### Sample Output Columns
+### `async_scraper.py`
+- **`get_html()`**: Asynchronously fetches HTML from a given URL.
+- **`extract_job_links()`**: Extracts product links from the search page.
+- **`scrape_page()`**: Scrapes multiple pages concurrently using `asyncio`.
+- **`main()`**: Orchestrates the scraping, gathering product URLs.
 
-- **name**: Product name
-- **brand**: Product brand
-- **price**: Current price
-- **typical_price**: Previous/typical price
-- **you_save**: Difference between typical price and current price
-- **number_of_ratings**: Total ratings
-- **reviews_usa**: Top 5 USA reviews
-- **reviews_other**: Top 5 international reviews
-- **discount**: Discount percentage (if available)
-- **color**: Product color
+### `sync_scraper.py`
+- **`scrap_page()`**: Extracts detailed product information (price, ratings, etc.).
+- **`scrap()`**: Fetches and parses the HTML for individual product pages.
+- **`get_html()`**: Fetches HTML from a given URL using a random user-agent to simulate human behavior.
 
-## Contributing
+## Logging and Error Handling
 
-Contributions are welcome! If you encounter any issues or have ideas for improvements, feel free to open a pull request or issue on GitHub.
+- The scrapers use logging to track the progress and errors. Any failed requests are retried multiple times.
+- A random delay is added between requests to avoid being blocked by Amazon.
+
+## Future Enhancements
+
+- Adding support for scraping more categories and filters.
+- Adding a feature for saving data to different formats (JSON, Excel).
+- Implementing rate-limiting logic for avoiding blocks more effectively.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-Feel free to modify the content as needed and replace any placeholder information like GitHub URLs and your own details. Let me know if you need further adjustments!
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
