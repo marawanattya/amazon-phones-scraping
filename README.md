@@ -7,7 +7,6 @@ This project is a web scraper designed to extract product information from Amazo
 - [Project Overview](#project-overview)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
-- [Installation](#installation)
 - [How It Works](#how-it-works)
 - [File Structure](#file-structure)
 - [Data Processing](#data-processing)
@@ -42,34 +41,6 @@ Before running the project, ensure you have Python 3.x installed on your machine
 - `pandas`
 - `concurrent.futures`
 
-You can install the necessary Python packages by running:
-
-```bash
-pip install -r requirements.txt
-```
-
-## Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/your-username/amazon-product-scraper.git
-   cd amazon-product-scraper
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Place the input CSV file (`links.csv`) with a column named `URL` containing product URLs in the root directory.
-
-4. Run the script:
-
-   ```bash
-   python scraper.py
-   ```
 
 ## How It Works
 
