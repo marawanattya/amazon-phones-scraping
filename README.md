@@ -1,112 +1,93 @@
-# Amazon Product Scraper
+# Amazon Phones Scraping Project
+
+This project consists of scraping phone data from Amazon using Python, `aiohttp`, and `BeautifulSoup`. The project is divided into two main parts:
+1. Scraping Amazon phone product links.
+2. Scraping detailed information about the phones.
+
+## Table of Contents
+- [Project Overview](#project-overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Files](#files)
+- [Dependencies](#dependencies)
+
 
 ## Project Overview
 
-This project is an **asynchronous web scraper** designed to extract product information from Amazon product listings. It uses `aiohttp` for making concurrent HTTP requests and `BeautifulSoup` for parsing HTML to extract data. The scraper also includes additional logic for data extraction, error handling, and retries.
+This project scrapes Amazon's phone product pages to gather product links and extract specific details about each phone model. The scraped data is saved in CSV files. 
 
-The project has two parts:
-1. **Async Scraper (using `aiohttp`)**: Fetches URLs and collects product listing links asynchronously.
-2. **Synchronous Scraper (using `requests`)**: Extracts product details like title, price, ratings, and reviews from the collected URLs.
+### Steps involved:
+1. **Scraping Links:** Extracts phone product URLs from Amazon's mobile section.
+2. **Scraping Products:** Extracts detailed product information such as brand, color, OS, CPU, screen size, battery capacity, and user reviews.
 
 ## Features
 
-- Uses asynchronous programming to scrape URLs concurrently, significantly speeding up the scraping process.
-- Extracts detailed product information such as:
-  - Product title
-  - Price
-  - Ratings and number of reviews
-  - Product specifications like color, OS, CPU, etc.
-  - Reviews (if available)
-- Includes random user-agent headers and timeouts to avoid getting blocked.
-- Resilient to errors with retry mechanisms.
+- Asynchronous scraping using `aiohttp` to efficiently handle multiple page requests concurrently.
+- Randomized User-Agent headers to minimize the risk of blocking.
+- Retry mechanism for handling failed requests.
+- Extracts key product details such as price, ratings, specifications, and user reviews.
 
-## Project Structure
+## Installation
 
+### Prerequisites
+
+Before running the project, ensure that you have the following installed:
+- Python 3.x
+- `aiohttp`, `requests`, `BeautifulSoup`, `pandas`, `nest_asyncio`
+
+To install the required libraries, run:
+
+```bash
+pip install aiohttp beautifulsoup4 pandas nest_asyncio requests
 ```
-├── async_scraper.py   # Asynchronous web scraping script
-├── sync_scraper.py    # Synchronous web scraping and data extraction
-├── README.md          # This file
-├── links.csv          # File containing the scraped product URLs
-└── requirements.txt   # Dependencies for the project
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/amazon-phones-scraping.git
+cd amazon-phones-scraping
 ```
-
-## Setup and Installation
-
-1. **Clone the repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/amazon-product-scraper.git
-   cd amazon-product-scraper
-   ```
-
-2. **Install dependencies:**
-
-   Make sure you have Python 3.8+ installed. Then install the required libraries:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Create a CSV file with product URLs:**
-
-   The `async_scraper.py` script will generate `links.csv` file that contains product URLs. You can customize the URL patterns in the script to fit your requirements.
 
 ## Usage
 
-### 1. Asynchronous URL Scraping
+### 1. Scraping Links
 
-The `async_scraper.py` script gathers Amazon product URLs and saves them in `links.csv`.
-
-**Running the asynchronous scraper:**
+Run the `amazon_phones_scraping.ipynb` notebook or Python script to start scraping product links:
 
 ```bash
-python async_scraper.py
+python amazon_phones_scraping_links.py
 ```
 
-This script:
-- Scrapes Amazon product listings and collects product URLs asynchronously.
-- Stores the collected URLs in a CSV file (`links.csv`).
+This will:
+- Gather phone product URLs.
+- Save the URLs in `links.csv`.
 
-### 2. Synchronous Product Data Scraping
+### 2. Scraping Product Details
 
-Once URLs are collected, the `sync_scraper.py` script extracts detailed product information.
-
-**Running the synchronous scraper:**
+Run the following script to scrape the detailed phone information:
 
 ```bash
-python sync_scraper.py
+python amazon_phones_scraping_products.py
 ```
 
-This script:
-- Reads URLs from `links.csv`.
-- Scrapes individual product pages.
-- Extracts relevant data like product details, ratings, and reviews.
-- Saves the data to a structured format (e.g., JSON, CSV, etc.).
+This will:
+- Scrape detailed information such as product description, technical specifications, pricing, reviews, and more.
+- Save the scraped data in `products.csv`.
 
-## Key Functions
+## Files
 
-### `async_scraper.py`
-- **`get_html()`**: Asynchronously fetches HTML from a given URL.
-- **`extract_job_links()`**: Extracts product links from the search page.
-- **`scrape_page()`**: Scrapes multiple pages concurrently using `asyncio`.
-- **`main()`**: Orchestrates the scraping, gathering product URLs.
+- `amazon_phones_scraping_links.py`: Script to scrape Amazon phone product URLs.
+- `amazon_phones_scraping_products.py`: Script to scrape detailed phone product information.
+- `links.csv`: CSV file that contains the scraped product URLs.
+- `products.csv`: CSV file with detailed product information.
 
-### `sync_scraper.py`
-- **`scrap_page()`**: Extracts detailed product information (price, ratings, etc.).
-- **`scrap()`**: Fetches and parses the HTML for individual product pages.
-- **`get_html()`**: Fetches HTML from a given URL using a random user-agent to simulate human behavior.
+## Dependencies
 
-## Logging and Error Handling
+- `aiohttp`: For asynchronous HTTP requests.
+- `BeautifulSoup4`: For parsing HTML.
+- `pandas`: For managing data in DataFrames.
+- `requests`: For synchronous HTTP requests (used in the product scraping stage).
+- `nest_asyncio`: To allow nested asynchronous loops in notebooks.
 
-- The scrapers use logging to track the progress and errors. Any failed requests are retried multiple times.
-- A random delay is added between requests to avoid being blocked by Amazon.
 
-## Future Enhancements
-
-- Adding support for scraping more categories and filters.
-- Adding a feature for saving data to different formats (JSON, Excel).
-- Implementing rate-limiting logic for avoiding blocks more effectively.
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
