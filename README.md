@@ -67,13 +67,12 @@ The processed data is saved as a CSV file (`amazon_product_data.csv`), which can
 ```
 amazon-product-scraper/
 │
-├── scraper.py          # Main script to scrape and process data
-├── requirements.txt    # Python dependencies
+├── amazon_phones_scraping.ipynb          # Main script to scrape and process data
 ├── links.csv           # Input file containing URLs of Amazon products to scrape
 └── amazon_product_data.csv  # Output CSV file containing scraped and cleaned data
 ```
 
-- **`scraper.py`**: The main script responsible for scraping, processing, and saving the data.
+- **`amazon_phones_scraping.ipynb`**: The main script responsible for scraping, processing, and saving the data.
 - **`links.csv`**: A CSV file with a list of Amazon product URLs to scrape.
 - **`amazon_product_data.csv`**: Output file that stores the scraped product data.
 
