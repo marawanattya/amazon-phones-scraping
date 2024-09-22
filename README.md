@@ -1,93 +1,132 @@
 # Amazon Phones Scraping Project
 
-This project consists of scraping phone data from Amazon using Python, `aiohttp`, and `BeautifulSoup`. The project is divided into two main parts:
-1. Scraping Amazon phone product links.
-2. Scraping detailed information about the phones.
-
-## Table of Contents
-- [Project Overview](#project-overview)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Files](#files)
-- [Dependencies](#dependencies)
-
+This project scrapes Amazon for product links and detailed information about mobile phones, using Python for asynchronous web scraping. The goal is to collect and store details such as prices, ratings, product descriptions, and other specifications of mobile phones listed on Amazon.
 
 ## Project Overview
 
-This project scrapes Amazon's phone product pages to gather product links and extract specific details about each phone model. The scraped data is saved in CSV files. 
+The project is split into two stages:
 
-### Steps involved:
-1. **Scraping Links:** Extracts phone product URLs from Amazon's mobile section.
-2. **Scraping Products:** Extracts detailed product information such as brand, color, OS, CPU, screen size, battery capacity, and user reviews.
+1. **Scraping Product Links**: Using asynchronous scraping with `aiohttp`, we collect links to individual mobile phone product pages from Amazon.
+2. **Scraping Product Details**: Once the product links are gathered, another script scrapes detailed information about each mobile phone, including its features, specifications, and customer reviews.
 
 ## Features
 
-- Asynchronous scraping using `aiohttp` to efficiently handle multiple page requests concurrently.
-- Randomized User-Agent headers to minimize the risk of blocking.
-- Retry mechanism for handling failed requests.
-- Extracts key product details such as price, ratings, specifications, and user reviews.
+- Asynchronous scraping of multiple pages using `aiohttp` and `asyncio`.
+- Collection of mobile phone product links across multiple pages of Amazon search results.
+- Extracts product details such as:
+  - Name, brand, color, dimensions
+  - Price, typical price, discounts
+  - Number of ratings, reviews, and status
+  - Buyer data (e.g., number of buyers last month)
+- Extracts customer reviews (USA and international)
+- Handles retries and failures in case of request timeouts
+- Saves data to CSV for easy access and analysis
 
-## Installation
+## Prerequisites
 
-### Prerequisites
+Before running the scripts, ensure you have the following installed:
 
-Before running the project, ensure that you have the following installed:
 - Python 3.x
-- `aiohttp`, `requests`, `BeautifulSoup`, `pandas`, `nest_asyncio`
+- Libraries:
+  - `aiohttp`
+  - `nest_asyncio`
+  - `beautifulsoup4`
+  - `pandas`
+  - `requests`
+  - `concurrent.futures`
+  - `lxml`
 
-To install the required libraries, run:
+Install these dependencies using:
 
 ```bash
-pip install aiohttp beautifulsoup4 pandas nest_asyncio requests
+pip install aiohttp nest_asyncio beautifulsoup4 pandas requests lxml
 ```
 
-### Clone the Repository
+## How It Works
 
-```bash
-git clone https://github.com/yourusername/amazon-phones-scraping.git
-cd amazon-phones-scraping
+### Scraping Logic
+
+1. **Scraping Product Links** (`amazon_phones_scraping.ipynb`): 
+    - The script starts by scraping mobile phone listings on Amazon.
+    - For each page, it collects the product links using the `aiohttp` library and stores them in a set to ensure uniqueness.
+
+2. **Scraping Product Details** (`amazon_phones_scraping_products.ipynb`):
+    - After collecting product URLs, a second script is used to extract detailed product information from each page.
+    - It uses the `requests` library with randomized user agents and retries to avoid rate-limiting or blocking.
+    - Extracted product details include:
+      - **Basic Info**: name, brand, color, model, etc.
+      - **Pricing Info**: price, typical price, discounts, savings
+      - **Ratings & Reviews**: number of ratings, reviews (USA and international)
+      - **Specifications**: battery capacity, storage, screen size, CPU, etc.
+
+
+
+### Data Cleaning and Processing
+
+Once data is collected from the HTML page, it is cleaned and processed. This includes:
+- Converting string prices and numbers (with symbols like `$`, `,`, and `K`) to numeric values.
+- Calculating the `you_save` column by subtracting the product's current price from the typical price.
+
+The processed data is saved as a CSV file (`amazon_product_data.csv`), which can be easily loaded into a DataFrame for further analysis.
+
+
+## File Structure
+
+```
+├── amazon_phones_scraping.ipynb          # Jupyter Notebook for scraping product links
+├── amazon_phones_scraping_products.ipynb # Jupyter Notebook for scraping product details
+├── links.csv                             # Output file containing scraped product URLs
+├── amazon_product_data.csv               # Output CSV file containing scraped and cleaned data
+└── README.md                             # Project documentation (this file)
 ```
 
+- **`amazon_phones_scraping.ipynb`**: The main script responsible for scraping, processing, and saving the data.
+- **`links.csv`**: A CSV file with a list of Amazon product URLs to scrape.
+- **`amazon_product_data.csv`**: Output file that stores the scraped product data.
+
+
+## Data Processing
+
+The following columns are processed and cleaned in the output CSV:
+
+- **typical_price**: Typical price of the product, stripped of `$` and `,`, converted to float.
+- **number_of_buyers_last_month_more_than**: Number of buyers last month, replacing 'K' with '000' and removing `+`.
+- **number_of_ratings**: Number of product ratings, stripped of commas.
+- **price**: Current price, stripped of `$` and `,`, converted to float.
+- **you_save**: Calculated field showing the amount saved (`typical_price - price`).
+
+The processed DataFrame is saved to `amazon_product_data.csv`.
+
+  
 ## Usage
 
-### 1. Scraping Links
+1. **Step 1**: Run the `amazon_phones_scraping.ipynb` to scrape product links.
+   - This will scrape multiple pages on Amazon and save all product links to `links.csv`.
 
-Run the `amazon_phones_scraping.ipynb` notebook or Python script to start scraping product links:
+2. **Step 2**: Run the `amazon_phones_scraping_products.ipynb` to scrape product details.
+   - This script reads `links.csv`, visits each link, scrapes the product details, and saves them to `amazon_product_data.csv`.
 
-```bash
-python amazon_phones_scraping_links.py
-```
+## Output
 
-This will:
-- Gather phone product URLs.
-- Save the URLs in `links.csv`.
+The script generates a CSV files
+- **links.csv**: A CSV file containing all scraped product URLs.
+- **amazon_product_data.csv**: containing all the extracted and cleaned product details.
 
-### 2. Scraping Product Details
+### Sample Output Columns
+- **URL**: Product URL
+- **name**: Product name
+- **brand**: Product brand
+- **price**: Current price
+- **typical_price**: Previous/typical price
+- **you_save**: Difference between typical price and current price
+- **number_of_ratings**: Total ratings
+- **reviews_usa**: Top 5 USA reviews
+- **reviews_other**: Top 5 international reviews
+- **discount**: Discount percentage (if available)
+- **color**: Product color
 
-Run the following script to scrape the detailed phone information:
+## Contributing
 
-```bash
-python amazon_phones_scraping_products.py
-```
-
-This will:
-- Scrape detailed information such as product description, technical specifications, pricing, reviews, and more.
-- Save the scraped data in `products.csv`.
-
-## Files
-
-- `amazon_phones_scraping_links.py`: Script to scrape Amazon phone product URLs.
-- `amazon_phones_scraping_products.py`: Script to scrape detailed phone product information.
-- `links.csv`: CSV file that contains the scraped product URLs.
-- `products.csv`: CSV file with detailed product information.
-
-## Dependencies
-
-- `aiohttp`: For asynchronous HTTP requests.
-- `BeautifulSoup4`: For parsing HTML.
-- `pandas`: For managing data in DataFrames.
-- `requests`: For synchronous HTTP requests (used in the product scraping stage).
-- `nest_asyncio`: To allow nested asynchronous loops in notebooks.
+Contributions are welcome! If you encounter any issues or have ideas for improvements, feel free to open a pull request or issue on GitHub.
 
 
