@@ -73,8 +73,7 @@ The processed data is saved as a CSV file (`amazon_product_data.csv`), which can
 ## File Structure
 
 ```
-├── amazon_phones_scraping.ipynb          # Jupyter Notebook for scraping product links
-├── amazon_phones_scraping_products.ipynb # Jupyter Notebook for scraping product details
+├── amazon_phones_scraping.ipynb          # The main script responsible for scraping, processing, and saving the data.
 ├── links.csv                             # Output file containing scraped product URLs
 ├── amazon_product_data.csv               # Output CSV file containing scraped and cleaned data
 └── README.md                             # Project documentation (this file)
